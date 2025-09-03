@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Mail, Github, Linkedin, Globe, FileText, Moon, Sun, Calendar, MapPin, BookOpen, GraduationCap, FlaskConical, ChevronRight, Filter, Copy, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import NextImage from "next/image";
+
+
 
 // --- Types ---
 import Image from "next/image";
@@ -66,7 +68,7 @@ export type SocialLinks = {
 const CONFIG = {
   name: "Tobias Pieter Göbel, MSc",
   tagline: "PhD Candidate in Physics and Artificial Intelligence",
-  avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=faces", // replace when you have a real headshot
+  avatar: "/profielphoto.png", // replace when you have a real headshot
   location: "Amsterdam, NL",
   affiliation: {
     role: "PhD Researcher",
@@ -195,6 +197,17 @@ export default function PhDPortfolio() {
   const [pubQuery, setPubQuery] = useState("");
   const [pubScope, setPubScope] = useState<string>("all");
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    // Render a minimal shell that matches the server HTML (no handlers)
+    return (
+      <main className="min-h-dvh bg-background text-foreground antialiased">
+        {/* Optional: simple header/skeleton so layout doesn't jump */}
+      </main>
+    );
+  }
   const filteredPubs = useMemo(() => {
     const pubs = (CONFIG.publications ?? []) as Publication[];
     return pubs.filter((pub) => {
@@ -503,7 +516,7 @@ export default function PhDPortfolio() {
             <Socials socials={CONFIG.socials} />
           </div>
           <p>
-            © {new Date().getFullYear()} {CONFIG.name}. Built with ❤️.
+            © {new Date().getFullYear()} {CONFIG.name}.
           </p>
         </footer>
       </div>
@@ -539,5 +552,4 @@ function Socials({ socials }: { socials: SocialLinks }) {
     </div>
   );
 }
-
 
