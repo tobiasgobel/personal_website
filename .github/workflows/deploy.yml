@@ -33,7 +33,6 @@ jobs:
       - name: Build & Export (Next.js)
         run: |
           npm run build
-          npx next export
 
       - name: Prepare deploy folder
         run: |
