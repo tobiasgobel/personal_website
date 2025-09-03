@@ -9,124 +9,132 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import NextImage from "next/image";
 
-/**
- * One‑file personal website for a PhD student.
- *
- * How to use
- * 1) Edit the CONFIG object below with your real info.
- * 2) Replace placeholder assets (photo, CV link, etc.).
- * 3) Deploy this single component anywhere (Vite/Next.js). Tailwind + shadcn/ui recommended.
- *
- * Design goals
- * - Clean academic aesthetic with soft shadows & rounded corners
- * - Mobile‑first, fully responsive
- * - Accessible (labels, focus rings, semantic landmarks)
- * - Quick customization via CONFIG
- */
+// --- Types ---
+import Image from "next/image";
+import type { ReactNode, FC } from "react";
+
+export type Publication = {
+  title: string;
+  authors?: string[];
+  venue?: string;
+  year?: number;
+  links?: { paper?: string; code?: string; poster?: string };
+  tags?: string[];
+  abstract?: string;
+};
+
+export type Project = {
+  title: string;
+  description: string;
+  link: string;
+  tags?: string[];
+};
+
+export type Talk = {
+  title: string;
+  event: string;
+  date: string; // ISO YYYY-MM-DD or free text
+  link?: string;
+};
+
+export type Teaching = {
+  course: string;
+  role: string;
+  term: string;
+  link?: string;
+};
+
+export type EducationEntry = {
+  degree: string;
+  field: string;
+  institution: string;
+  location?: string;
+  start: string;
+  end?: string;
+  thesisTitle?: string;
+  link?: string;
+};
+
+export type SocialLinks = {
+  github?: string;
+  linkedin?: string;
+  website?: string;
+};
 
 const CONFIG = {
-  name: "Your Name, MSc",
-  tagline: "PhD Candidate in Artificial Intelligence",
-  avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=faces", // replace with your headshot URL
+  name: "Tobias Pieter Göbel, MSc",
+  tagline: "PhD Candidate in Physics and Artificial Intelligence",
+  avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=faces", // replace when you have a real headshot
   location: "Amsterdam, NL",
   affiliation: {
     role: "PhD Researcher",
-    org: "University of Somewhere",
-    link: "https://example.edu",
-    start: "2023",
+    org: "University of Amsterdam",
+    link: "https://www.uva.nl",
+    start: "2025",
   },
-  email: "you@example.com",
+  email: "tobiaspietergobel@gmail.com",
   socials: {
-    github: "https://github.com/yourhandle",
-    linkedin: "https://www.linkedin.com/in/yourhandle/",
-    website: "https://yourdomain.com",
-    googleScholar: "https://scholar.google.com/citations?user=XXXXX",
+    github: "https://github.com/tobiasgobel",
+    linkedin: "",
+    website: "",
   },
-  cvUrl: "/cv.pdf", // replace with your CV path
+  cvUrl: "/CV_Tobias_Gobel.pdf",
   researchAreas: [
+    { name: "Physics-informed Machine Learning" },
+    { name: "Quantum Field Theory & Computational Physics" },
+    { name: "Statistical Mechanics in Neural Networks" },
     { name: "Representation Learning" },
-    { name: "Scientific ML" },
-    { name: "Optimization" },
   ],
   highlights: [
-    { label: "Papers", value: 6 },
-    { label: "Citations", value: 214 },
-    { label: "Talks", value: 9 },
+    { label: "Papers", value: 0 },
+    { label: "Citations", value: 0 },
+    { label: "Talks", value: 0 },
   ],
-  // Publications: minimal schema; extend as needed
-  publications: [
-    {
-      title: "Learning Geometric Priors for Scientific Discovery",
-      authors: ["Your Name", "A. Collaborator", "B. Mentor"],
-      venue: "ICML 2025",
-      year: 2025,
-      links: {
-        paper: "#",
-        code: "#",
-        poster: "#",
-      },
-      tags: ["Geometric DL", "Physics‑informed"],
-      abstract:
-        "We introduce a framework that embeds symplectic inductive biases into deep architectures, improving generalization on chaotic dynamics.",
-    },
-    {
-      title: "Spectral Weighting for CP^N Lattice Models",
-      authors: ["Your Name", "C. Coauthor"],
-      venue: "NeurIPS 2024 Workshop",
-      year: 2024,
-      links: {
-        paper: "#",
-        code: "#",
-      },
-      tags: ["CP^N", "Lattice", "Fourier"],
-      abstract:
-        "A fast method for density correction using Fourier transforms with projection and stability guarantees.",
-    },
-  ],
+  publications: [] as Publication[],
   projects: [],
   education: [
     {
       degree: "MSc",
+      field: "Theoretical Physics",
+      institution: "University of Amsterdam",
+      location: "Amsterdam, NL",
+      start: "2020",
+      end: "2025",
+      thesisTitle: "Tackling Topological Freezing with Normalizing Flows",
+      link: "https://scripties.uba.uva.nl/search?id=record_54918"
+    },
+    {
+      degree: "MSc (cum laude)",
       field: "Artificial Intelligence",
-      institution: "Your University",
-      location: "City, Country",
+      institution: "University of Amsterdam",
+      location: "Amsterdam, NL",
       start: "2022",
       end: "2024",
-      thesisTitle: "Your thesis title",
-      link: "#"
+      thesisTitle: "On Conformally Equivariant Convolutional Networks"
     },
     {
-      degree: "BSc",
+      degree: "Minor",
       field: "Physics",
-      institution: "Your University",
-      location: "City, Country",
-      start: "2018",
-      end: "2022"
+      institution: "University of British Columbia",
+      location: "Vancouver, Canada",
+      start: "2019",
+      end: "2020"
+    },
+    {
+      degree: "BSc (cum laude)",
+      field: "Physics",
+      institution: "Leiden University",
+      location: "Leiden, NL",
+      start: "2017",
+      end: "2020",
+      thesisTitle: "On the Physics of Trotterization",
+      link: "https://studenttheses.universiteitleiden.nl/handle/1887/133570"
     }
   ],
-  teaching: [
-    {
-      course: "Machine Learning",
-      role: "TA",
-      term: "Spring 2025",
-      link: "#",
-    },
-    {
-      course: "Numerical Methods",
-      role: "Guest Lecturer",
-      term: "Fall 2024",
-      link: "#",
-    },
-  ],
-  talks: [
-    {
-      title: "Symplectic Neural Nets",
-      event: "ML Research Seminar",
-      date: "2025‑05‑10",
-      link: "#",
-    },
-  ],
+  teaching: [],
+  talks: [],
 };
 
 function useTheme() {
@@ -188,15 +196,29 @@ export default function PhDPortfolio() {
   const [pubScope, setPubScope] = useState<string>("all");
 
   const filteredPubs = useMemo(() => {
-    return CONFIG.publications.filter((p) => {
-      const matchesQuery = (p.title + p.venue + p.authors.join(" ") + (p.abstract ?? "") + (p.tags ?? []).join(" ")).toLowerCase().includes(pubQuery.toLowerCase());
-      const scopeOk = pubScope === "all" || String(p.year) === pubScope;
+    const pubs = (CONFIG.publications ?? []) as Publication[];
+    return pubs.filter((pub) => {
+      const hay = (
+        (pub.title ?? "") +
+        (pub.venue ?? "") +
+        ((pub.authors ?? []).join(" ")) +
+        (pub.abstract ?? "") +
+        ((pub.tags ?? []).join(" "))
+      ).toLowerCase();
+      const matchesQuery = hay.includes(pubQuery.toLowerCase());
+      const scopeOk = pubScope === "all" || String(pub.year ?? "") === pubScope;
       return matchesQuery && scopeOk;
     });
   }, [pubQuery, pubScope]);
 
   const years = useMemo(() => {
-    const y = Array.from(new Set(CONFIG.publications.map((p) => p.year))).sort((a, b) => b - a);
+    const y = Array.from(
+      new Set(
+        CONFIG.publications
+          .map((p: Publication) => p.year)
+          .filter((n): n is number => typeof n === "number")
+      )
+    ).sort((a, b) => b - a);
     return y.map(String);
   }, []);
 
@@ -206,7 +228,7 @@ export default function PhDPortfolio() {
         {/* Header */}
         <header className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <img src={CONFIG.avatar} alt={`${CONFIG.name} headshot`} className="h-16 w-16 rounded-2xl object-cover shadow" />
+            <NextImage src={CONFIG.avatar} alt={`${CONFIG.name} headshot`} width={64} height={64} className="h-16 w-16 rounded-2xl object-cover shadow" unoptimized loader={({ src }) => src} />
             <div>
               <h1 className="text-2xl font-bold leading-tight">{CONFIG.name}</h1>
               <p className="text-muted-foreground text-sm">{CONFIG.tagline}</p>
@@ -216,11 +238,13 @@ export default function PhDPortfolio() {
             <Button variant="ghost" onClick={toggle} aria-label="Toggle theme" className="rounded-xl">
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <a href={CONFIG.cvUrl} target="_blank" rel="noreferrer" className="inline-flex">
-              <Button className="rounded-xl gap-2">
-                <FileText className="h-4 w-4" /> CV
-              </Button>
-            </a>
+            {CONFIG.cvUrl && (
+              <a href={CONFIG.cvUrl} target="_blank" rel="noreferrer" className="inline-flex">
+                <Button className="rounded-xl gap-2">
+                  <FileText className="h-4 w-4" /> CV
+                </Button>
+              </a>
+            )}
           </div>
         </header>
 
@@ -230,7 +254,7 @@ export default function PhDPortfolio() {
             <div className="grid md:grid-cols-[1.2fr_.8fr] gap-6 items-start">
               <div>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  I am a PhD researcher at <a className="underline underline-offset-4" href={CONFIG.affiliation.link} target="_blank" rel="noreferrer">{CONFIG.affiliation.org}</a> working on machine learning for scientific discovery. My work focuses on {CONFIG.researchAreas.map((r) => r.name).join(", ")}. I like building open‑source tools and collaborating across physics and AI.
+                  I am a PhD researcher at <a className="underline underline-offset-4" href={CONFIG.affiliation.link} target="_blank" rel="noreferrer">{CONFIG.affiliation.org}</a> working on machine learning and physics. My work focuses on {CONFIG.researchAreas.map((r) => r.name).join(", ")}. I enjoy building open‑source tools and collaborating across physics and AI.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <EmailChip email={CONFIG.email} />
@@ -287,60 +311,68 @@ export default function PhDPortfolio() {
                 </div>
               </div>
               <div className="mt-4 grid gap-4">
-                {filteredPubs.map((p) => (
-                  <motion.div key={p.title} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-                    <Card className="rounded-2xl">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base font-semibold">{p.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                          <span>{p.authors.join(", ")}</span>
-                          <span>·</span>
-                          <span>{p.venue} {p.year}</span>
-                        </div>
-                        {p.abstract && <p className="mt-3 text-sm text-muted-foreground">{p.abstract}</p>}
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {p.tags?.map((t) => (
-                            <Badge key={t} variant="secondary" className="rounded-lg">{t}</Badge>
-                          ))}
-                        </div>
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {p.links?.paper && (
-                            <a className="inline-flex" href={p.links.paper} target="_blank" rel="noreferrer">
-                              <Button variant="outline" className="rounded-xl gap-2 text-xs">
-                                <BookOpen className="h-4 w-4" /> Paper <ExternalLink className="h-3 w-3"/>
-                              </Button>
-                            </a>
-                          )}
-                          {p.links?.code && (
-                            <a className="inline-flex" href={p.links.code} target="_blank" rel="noreferrer">
-                              <Button variant="outline" className="rounded-xl gap-2 text-xs">
-                                <Github className="h-4 w-4" /> Code <ExternalLink className="h-3 w-3"/>
-                              </Button>
-                            </a>
-                          )}
-                          {p.links?.poster && (
-                            <a className="inline-flex" href={p.links.poster} target="_blank" rel="noreferrer">
-                              <Button variant="outline" className="rounded-xl gap-2 text-xs">
-                                <FileText className="h-4 w-4" /> Poster <ExternalLink className="h-3 w-3"/>
-                              </Button>
-                            </a>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-                {filteredPubs.length === 0 && (
-                  <p className="text-sm text-muted-foreground">No publications match your search.</p>
+                {filteredPubs.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No publications yet.</p>
+                ) : (
+                  filteredPubs.map((p: Publication) => (
+                    <motion.div key={p.title} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+                      <Card className="rounded-2xl">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-base font-semibold">{p.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                            {p.authors && <span>{p.authors.join(", ")}</span>}
+                            {p.venue && (
+                              <>
+                                <span>·</span>
+                                <span>{p.venue} {p.year}</span>
+                              </>
+                            )}
+                          </div>
+                          {p.abstract && <p className="mt-3 text-sm text-muted-foreground">{p.abstract}</p>}
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {p.tags?.map((t: string) => (
+                              <Badge key={t} variant="secondary" className="rounded-lg">{t}</Badge>
+                            ))}
+                          </div>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {p.links?.paper && (
+                              <a className="inline-flex" href={p.links.paper} target="_blank" rel="noreferrer">
+                                <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                                  <BookOpen className="h-4 w-4" /> Paper <ExternalLink className="h-3 w-3"/>
+                                </Button>
+                              </a>
+                            )}
+                            {p.links?.code && (
+                              <a className="inline-flex" href={p.links.code} target="_blank" rel="noreferrer">
+                                <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                                  <Github className="h-4 w-4" /> Code <ExternalLink className="h-3 w-3"/>
+                                </Button>
+                              </a>
+                            )}
+                            {p.links?.poster && (
+                              <a className="inline-flex" href={p.links.poster} target="_blank" rel="noreferrer">
+                                <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                                  <FileText className="h-4 w-4" /> Poster <ExternalLink className="h-3 w-3"/>
+                                </Button>
+                              </a>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))
                 )}
               </div>
             </TabsContent>
 
             <TabsContent value="projects" className="mt-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                {CONFIG.projects.map((proj) => (
+                {CONFIG.projects.length === 0 && (
+                  <p className="text-sm text-muted-foreground">No projects yet.</p>
+                )}
+                {CONFIG.projects.map((proj: Project) => (
                   <Card key={proj.title} className="rounded-2xl">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-base font-semibold">{proj.title}</CardTitle>
@@ -348,7 +380,7 @@ export default function PhDPortfolio() {
                     <CardContent className="pt-0">
                       <p className="text-sm text-muted-foreground">{proj.description}</p>
                       <div className="mt-3 flex items-center gap-2 flex-wrap">
-                        {proj.tags?.map((t) => (
+                        {proj.tags?.map((t: string) => (
                           <Badge key={t} variant="secondary" className="rounded-lg">{t}</Badge>
                         ))}
                       </div>
@@ -365,7 +397,10 @@ export default function PhDPortfolio() {
 
             <TabsContent value="talks" className="mt-4">
               <div className="grid gap-4">
-                {CONFIG.talks.map((t) => (
+                {CONFIG.talks.length === 0 && (
+                  <p className="text-sm text-muted-foreground">No talks yet.</p>
+                )}
+                {CONFIG.talks.map((t: Talk) => (
                   <Card key={t.title} className="rounded-2xl">
                     <CardContent className="p-6">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -439,7 +474,10 @@ export default function PhDPortfolio() {
         <section className="mb-12">
           <SectionTitle icon={BookOpen} title="Teaching" subtitle="Courses, mentoring, and outreach" />
           <div className="grid sm:grid-cols-2 gap-4 mt-4">
-            {CONFIG.teaching.map((c) => (
+            {CONFIG.teaching.length === 0 && (
+              <p className="text-sm text-muted-foreground">No teaching entries yet.</p>
+            )}
+            {CONFIG.teaching.map((c: Teaching) => (
               <Card key={`${c.course}-${c.term}`} className="rounded-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between gap-3">
@@ -465,7 +503,7 @@ export default function PhDPortfolio() {
             <Socials socials={CONFIG.socials} />
           </div>
           <p>
-            © {new Date().getFullYear()} {CONFIG.name}. Built with ❤️. <span className="sr-only">End of page</span>
+            © {new Date().getFullYear()} {CONFIG.name}. Built with ❤️.
           </p>
         </footer>
       </div>
@@ -473,8 +511,8 @@ export default function PhDPortfolio() {
   );
 }
 
-function Socials({ socials }: { socials: typeof CONFIG.socials }) {
-  const IconLink = ({ href, label, children }: any) => (
+function Socials({ socials }: { socials: SocialLinks }) {
+  const IconLink: React.FC<{ href: string; label: string; children: React.ReactNode }> = ({ href, label, children }) => (
     <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="inline-flex">
       <Button variant="ghost" className="rounded-xl">
         {children}
@@ -501,4 +539,5 @@ function Socials({ socials }: { socials: typeof CONFIG.socials }) {
     </div>
   );
 }
+
 
