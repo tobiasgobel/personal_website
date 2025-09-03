@@ -11,8 +11,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import NextImage from "next/image";
 
-
-
 // --- Types ---
 import Image from "next/image";
 import type { ReactNode, FC } from "react";
@@ -140,12 +138,17 @@ const CONFIG = {
 };
 
 function useTheme() {
-  const [theme, setTheme] = useState(
-    typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  );
-  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => 'light');
+  // Resolve preferred theme on client to avoid hydration issues breaking interactivity
+  // If system prefers dark, switch after mount
+  // This prevents server/client markup mismatch that can block event handlers
+  useEffect(() => {
+    try {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(prefersDark ? 'dark' : 'light');
+    } catch {}
+  }, []);
+  const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
   return { theme, toggle };
 }
 
@@ -197,17 +200,6 @@ export default function PhDPortfolio() {
   const [pubQuery, setPubQuery] = useState("");
   const [pubScope, setPubScope] = useState<string>("all");
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) {
-    // Render a minimal shell that matches the server HTML (no handlers)
-    return (
-      <main className="min-h-dvh bg-background text-foreground antialiased">
-        {/* Optional: simple header/skeleton so layout doesn't jump */}
-      </main>
-    );
-  }
   const filteredPubs = useMemo(() => {
     const pubs = (CONFIG.publications ?? []) as Publication[];
     return pubs.filter((pub) => {
@@ -252,11 +244,11 @@ export default function PhDPortfolio() {
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
             {CONFIG.cvUrl && (
-              <a href={CONFIG.cvUrl} target="_blank" rel="noreferrer" className="inline-flex">
-                <Button className="rounded-xl gap-2">
+              <Button className="rounded-xl gap-2" asChild>
+                <a href={CONFIG.cvUrl} target="_blank" rel="noreferrer">
                   <FileText className="h-4 w-4" /> CV
-                </Button>
-              </a>
+                </a>
+              </Button>
             )}
           </div>
         </header>
@@ -351,25 +343,25 @@ export default function PhDPortfolio() {
                           </div>
                           <div className="mt-4 flex flex-wrap gap-2">
                             {p.links?.paper && (
-                              <a className="inline-flex" href={p.links.paper} target="_blank" rel="noreferrer">
-                                <Button variant="outline" className="rounded-xl gap-2 text-xs">
-                                  <BookOpen className="h-4 w-4" /> Paper <ExternalLink className="h-3 w-3"/>
-                                </Button>
+                              <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                              <a href={p.links?.paper} target="_blank" rel="noreferrer">
+                                <BookOpen className="h-4 w-4" /> Paper <ExternalLink className="h-3 w-3"/>
                               </a>
+                            </Button>
                             )}
                             {p.links?.code && (
-                              <a className="inline-flex" href={p.links.code} target="_blank" rel="noreferrer">
-                                <Button variant="outline" className="rounded-xl gap-2 text-xs">
-                                  <Github className="h-4 w-4" /> Code <ExternalLink className="h-3 w-3"/>
-                                </Button>
+                              <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                              <a href={p.links?.code} target="_blank" rel="noreferrer">
+                                <Github className="h-4 w-4" /> Code <ExternalLink className="h-3 w-3"/>
                               </a>
+                            </Button>
                             )}
                             {p.links?.poster && (
-                              <a className="inline-flex" href={p.links.poster} target="_blank" rel="noreferrer">
-                                <Button variant="outline" className="rounded-xl gap-2 text-xs">
-                                  <FileText className="h-4 w-4" /> Poster <ExternalLink className="h-3 w-3"/>
-                                </Button>
+                              <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                              <a href={p.links?.poster} target="_blank" rel="noreferrer">
+                                <FileText className="h-4 w-4" /> Poster <ExternalLink className="h-3 w-3"/>
                               </a>
+                            </Button>
                             )}
                           </div>
                         </CardContent>
@@ -397,11 +389,11 @@ export default function PhDPortfolio() {
                           <Badge key={t} variant="secondary" className="rounded-lg">{t}</Badge>
                         ))}
                       </div>
-                      <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex mt-4">
-                        <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                      <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                        <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex mt-4">
                           <ChevronRight className="h-4 w-4"/> View <ExternalLink className="h-3 w-3"/>
-                        </Button>
-                      </a>
+                        </a>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -423,11 +415,11 @@ export default function PhDPortfolio() {
                             <Calendar className="h-4 w-4"/> {t.event} · {t.date}
                           </div>
                         </div>
-                        <a href={t.link} target="_blank" rel="noreferrer" className="inline-flex">
-                          <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                        <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                          <a href={t.link} target="_blank" rel="noreferrer">
                             <ExternalLink className="h-4 w-4"/> Details
-                          </Button>
-                        </a>
+                          </a>
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -470,11 +462,11 @@ export default function PhDPortfolio() {
                       )}
                     </div>
                     {e.link && (
-                      <a href={e.link} target="_blank" rel="noreferrer" className="inline-flex">
-                        <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                      <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                        <a href={e.link} target="_blank" rel="noreferrer">
                           <ExternalLink className="h-4 w-4"/> Details
-                        </Button>
-                      </a>
+                        </a>
+                      </Button>
                     )}
                   </div>
                 </CardContent>
@@ -498,11 +490,11 @@ export default function PhDPortfolio() {
                       <h3 className="font-semibold leading-tight">{c.course}</h3>
                       <p className="text-sm text-muted-foreground mt-1">{c.role} · {c.term}</p>
                     </div>
-                    <a href={c.link} target="_blank" rel="noreferrer" className="inline-flex">
-                      <Button variant="outline" className="rounded-xl gap-2 text-xs">
+                    <Button variant="outline" className="rounded-xl gap-2 text-xs" asChild>
+                      <a href={c.link} target="_blank" rel="noreferrer">
                         <ExternalLink className="h-4 w-4"/> Syllabus
-                      </Button>
-                    </a>
+                      </a>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -516,7 +508,7 @@ export default function PhDPortfolio() {
             <Socials socials={CONFIG.socials} />
           </div>
           <p>
-            © {new Date().getFullYear()} {CONFIG.name}.
+            © {new Date().getFullYear()} {CONFIG.name}. Built with ❤️.
           </p>
         </footer>
       </div>
@@ -525,12 +517,12 @@ export default function PhDPortfolio() {
 }
 
 function Socials({ socials }: { socials: SocialLinks }) {
-  const IconLink: React.FC<{ href: string; label: string; children: React.ReactNode }> = ({ href, label, children }) => (
-    <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="inline-flex">
-      <Button variant="ghost" className="rounded-xl">
+  const IconLink: FC<{ href: string; label: string; children: ReactNode }> = ({ href, label, children }) => (
+    <Button variant="ghost" className="rounded-xl" asChild>
+      <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="inline-flex">
         {children}
-      </Button>
-    </a>
+      </a>
+    </Button>
   );
   return (
     <div className="flex items-center gap-1">
@@ -552,4 +544,3 @@ function Socials({ socials }: { socials: SocialLinks }) {
     </div>
   );
 }
-
