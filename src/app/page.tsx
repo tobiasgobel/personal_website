@@ -175,16 +175,46 @@ function SectionTitle({ icon: Icon, title, subtitle }: { icon: any; title: strin
 
 function EmailChip({ email }: { email: string }) {
   const [copied, setCopied] = useState(false);
+
+  async function copyTextSafe(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return ok;
+      } catch {
+        return false;
+      }
+    }
+  }
+
   return (
     <Button
       variant="secondary"
-      className="gap-2"
+      className="gap-2 pointer-events-auto relative z-10"
       onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(email);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        } catch {}
+        const ok = await copyTextSafe(email);
+        setCopied(ok);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      aria-label={copied ? "Email copied" : "Copy email"}
+      type="button"
+    >
+      <Mail className="h-4 w-4" />
+      {copied ? "Copied" : email}
+      <Copy className="h-4 w-4" />
+    </Button>
+  );
+} catch {}
       }}
       aria-label={copied ? "Email copied" : "Copy email"}
     >
@@ -228,7 +258,7 @@ export default function PhDPortfolio() {
   }, []);
 
   return (
-    <main className={"min-h-dvh bg-background text-foreground " + (theme === "dark" ? "dark" : "") + " antialiased selection:bg-primary/20"}>
+    <main suppressHydrationWarning className={"min-h-dvh bg-background text-foreground " + (theme === "dark" ? "dark" : "") + " antialiased selection:bg-primary/20"}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}
         <header className="flex items-center justify-between mb-8">
@@ -240,7 +270,7 @@ export default function PhDPortfolio() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={toggle} aria-label="Toggle theme" className="rounded-xl">
+            <Button variant="ghost" onClick={toggle} aria-label="Toggle theme" className="rounded-xl pointer-events-auto relative z-10" type="button">
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
             {CONFIG.cvUrl && (
@@ -508,7 +538,7 @@ export default function PhDPortfolio() {
             <Socials socials={CONFIG.socials} />
           </div>
           <p>
-            © {new Date().getFullYear()} {CONFIG.name}. Built with ❤️.
+            © {new Date().getFullYear()} {CONFIG.name}.
           </p>
         </footer>
       </div>
